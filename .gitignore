@@ -1,0 +1,21 @@
+# Environment variables
+.env
+
+# Claude Code
+CLAUDE.md
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+
+# Test artifacts
+*.test
+*.out
+coverage.html

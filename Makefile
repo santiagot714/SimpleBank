@@ -1,4 +1,4 @@
-include .env
+-include .env
 export
 
 DB_URL=$(DATABASE_URL)

@@ -1,0 +1,24 @@
+---
+name: lint-go
+
+on: # yamllint disable-line rule:truthy
+  push: null
+
+jobs:
+  golangci-lint:
+    name: Go Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.2'
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9

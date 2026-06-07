@@ -1,13 +1,12 @@
+---
 name: ci-test
 
-on:
-  push:
-    branches: [ "main" ]
+on: # yamllint disable-line rule:truthy
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -28,23 +27,27 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.26.2'
-      id: go
+      - name: Set up Go
+        id: go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.2'
 
-    - name: Install golang-migrate
-      run: |
-        curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
-        sudo mv migrate /usr/local/bin/migrate
+      - name: Install golang-migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/local/bin/migrate
 
-    - name: Run migrations
-      run: migrate -path db/migrations -database "postgresql://postgres:postgres@localhost:5432/simple_bank?sslmode=disable" up
+      - name: Run migrations
+        run: >-
+          migrate -path db/migrations
+          -database "postgresql://postgres:postgres@localhost:5432/simple_bank?sslmode=disable"
+          up
 
-    - name: Test
-      env:
-        TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/simple_bank?sslmode=disable
-      run: make test
+      - name: Test
+        env:
+          TEST_DATABASE_URL: >-
+            postgresql://postgres:postgres@localhost:5432/simple_bank?sslmode=disable
+        run: make test

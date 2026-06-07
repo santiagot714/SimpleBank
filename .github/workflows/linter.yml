@@ -1,0 +1,35 @@
+---
+name: Lint
+
+on: # yamllint disable-line rule:truthy
+  push: null
+  pull_request: null
+
+permissions: {}
+
+jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      issues: write
+      pull-requests: write
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Super-linter
+        uses: super-linter/super-linter@v8.6.0 # x-release-please-version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_YAML: true
+          VALIDATE_SQLFLUFF: true
+          VALIDATE_GITHUB_ACTIONS: true

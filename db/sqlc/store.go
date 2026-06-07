@@ -29,7 +29,7 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error) error {
 	err = fn(q)
 	if err != nil {
 		if rbErr := tx.Rollback(); rbErr != nil {
-			return fmt.Errorf("tx err: %v, rb err: %v", err, rbErr)
+			return fmt.Errorf("tx err: %w, rb err: %w", err, rbErr)
 		}
 		return err
 	}
@@ -59,11 +59,7 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
 		// Create transfer
-		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
-			OriginAccountID:      arg.OriginAccountID,
-			DestinationAccountID: arg.DestinationAccountID,
-			Amount:               arg.Amount,
-		})
+		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams(arg))
 		if err != nil {
 			return err
 		}
@@ -88,6 +84,9 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 			result.OriginAccount, result.DestinationAccount, err = addMoney(ctx, q, arg.OriginAccountID, arg.Amount.Neg(), arg.DestinationAccountID, arg.Amount)
 		} else {
 			result.DestinationAccount, result.OriginAccount, err = addMoney(ctx, q, arg.DestinationAccountID, arg.Amount, arg.OriginAccountID, arg.Amount.Neg())
+		}
+		if err != nil {
+			return err
 		}
 
 		return nil

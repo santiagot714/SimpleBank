@@ -30,7 +30,7 @@ func TestTransferTx(t *testing.T) {
 			results <- result
 		}()
 	}
-	registered_transactions := make(map[int]bool)
+	registeredTransactions := make(map[int]bool)
 	for i := 0; i < n; i++ {
 		err := <-errs
 		require.NoError(t, err)
@@ -84,13 +84,13 @@ func TestTransferTx(t *testing.T) {
 		diff2 := destinationAccount.Balance.Sub(account2.Balance)
 
 		require.True(t, diff1.Equal(diff2))
-		require.True(t, diff1.Sign() == 1)
+		require.Equal(t, 1, diff1.Sign())
 		require.True(t, diff1.Mod(amount).Equal(decimal.Zero))
 
 		k := int(diff1.Div(amount).IntPart())
 		require.True(t, k >= 1 && k <= n)
-		require.NotContains(t, registered_transactions, k)
-		registered_transactions[k] = true
+		require.NotContains(t, registeredTransactions, k)
+		registeredTransactions[k] = true
 	}
 	// check the final updated balance
 	updatedAccount1, err := store.GetAccount(context.Background(), account1.ID)

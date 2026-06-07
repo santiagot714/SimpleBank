@@ -11,6 +11,7 @@ import (
 )
 
 func createRandomTransfer(t *testing.T) Transfer {
+	t.Helper()
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
 	arg := CreateTransferParams{

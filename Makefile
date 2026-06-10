@@ -5,7 +5,7 @@ DB_URL=$(DATABASE_URL)
 TEST_DB_URL=$(TEST_DATABASE_URL)
 MIGRATIONS_PATH=db/migrations
 
-.PHONY: migrate migrate-down migrate-force migrate-create migrate-version test test-integration
+.PHONY: migrate migrate-down migrate-force migrate-create migrate-version test test-integration sqlc server mock
 
 migrate:
 	@echo "Running migrations..."
@@ -38,3 +38,11 @@ test-integration:
 sqlc:
 	@echo "Generating SQLC code..."
 	@sqlc generate
+
+server:
+	@echo "Starting server..."
+	@go run main.go
+
+mock:
+	@echo "Generating mock code..."
+	@mockgen -destination db/mock/store.go -package mockdb github.com/santiagot714/SimpleBank/db/sqlc Store

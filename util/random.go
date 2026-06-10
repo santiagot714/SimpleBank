@@ -1,8 +1,10 @@
-// Package util contains utility functions for random data generation.
 package util
 
 import (
-	"math/rand"
+	"crypto/rand"
+	"encoding/hex"
+	"fmt"
+	mathrand "math/rand"
 
 	"github.com/shopspring/decimal"
 )
@@ -13,16 +15,24 @@ const (
 
 // RandomInt generates a random integer between min and max.
 func RandomInt(minRange, maxRange int64) int64 {
-	return minRange + rand.Int63n(maxRange-minRange+1)
+	return minRange + mathrand.Int63n(maxRange-minRange+1)
 }
 
 // RandomString generates a random string of length n.
 func RandomString(n int) string {
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = alphabet[rand.Intn(len(alphabet))]
+		b[i] = alphabet[mathrand.Intn(len(alphabet))]
 	}
 	return string(b)
+}
+
+// RandomSecretKey generates a cryptographically random 32-byte seed encoded as hex (64 chars).
+// NewPasetoMaker uses this seed to derive a valid ed25519 keypair.
+func RandomSecretKey() string {
+	key := make([]byte, 32)
+	rand.Read(key)
+	return hex.EncodeToString(key)
 }
 
 // RandomOwner generates a random owner name.
@@ -37,5 +47,10 @@ func RandomMoney() decimal.Decimal {
 
 // RandomCurrency generates a random currency.
 func RandomCurrency() string {
-	return []string{"USD", "EUR", "CAD", "GBP", "COP"}[rand.Intn(5)]
+	return []string{USD, EUR, GBP, CAD, CHF, NZD, AUD, COP}[mathrand.Intn(8)]
+}
+
+// RandomEmail generates a random email.
+func RandomEmail() string {
+	return fmt.Sprintf("%s@example.com", RandomString(6))
 }
